@@ -3,6 +3,11 @@ name: Crear APK
 on:
   push:
     branches: [main]
+    paths:
+      - 'app/**'
+      - '*.gradle'
+      - 'gradle.properties'
+      - '.github/workflows/crear-apk.yml'
   workflow_dispatch:
 
 permissions:

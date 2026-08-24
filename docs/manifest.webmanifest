@@ -1,0 +1,14 @@
+{
+  "name": "Calculadora feliz",
+  "short_name": "Calculadora",
+  "description": "Una calculadora infantil, colorida y fácil de usar.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff5d6",
+  "theme_color": "#7353ba",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
+

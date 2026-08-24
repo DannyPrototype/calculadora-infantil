@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calculadora feliz</string>
+    <string name="titulo">🌟 Calculadora feliz 🌟</string>
+    <string name="subtitulo">¡Los números son divertidos!</string>
+    <string name="limpiar">BORRAR</string>
+</resources>

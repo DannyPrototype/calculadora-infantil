@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#7353ba">
+  <meta name="description" content="Calculadora infantil, colorida y fácil de usar.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>Calculadora feliz</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #fff5d6; color: #34324a; display: grid; place-items: center; }
+    main { width: min(100%, 460px); min-height: 100vh; padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; }
+    h1 { color: #7353ba; text-align: center; font-size: 1.8rem; margin: 6px 0 0; }
+    .subtitulo { text-align: center; margin: 4px 0 16px; }
+    #pantalla { background: white; border: 4px solid #7353ba; border-radius: 24px; min-height: 90px; padding: 16px; display: flex; align-items: center; justify-content: flex-end; font-size: clamp(2rem, 10vw, 2.8rem); font-weight: 800; overflow-wrap: anywhere; }
+    .teclado { flex: 1; margin-top: 14px; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, minmax(62px, 1fr)); gap: 10px; }
+    button { border: 3px solid #57c7e3; border-radius: 20px; background: white; color: #34324a; font: inherit; font-size: 1.55rem; font-weight: 800; cursor: pointer; touch-action: manipulation; box-shadow: 0 3px 0 rgb(52 50 74 / .15); }
+    button:active { transform: translateY(2px); box-shadow: none; }
+    .borrar { grid-column: span 3; background: #ff7eb6; border-color: #ff7eb6; font-size: 1.1rem; }
+    .operacion { background: #ffd166; border-color: #ffd166; }
+    .cero { grid-column: span 2; }
+    .igual { background: #55d6a6; border-color: #55d6a6; }
+    #instalar { display: none; margin-top: 10px; padding: 12px; width: 100%; background: #7353ba; border: 0; color: white; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>🌟 Calculadora feliz 🌟</h1>
+    <p class="subtitulo">¡Los números son divertidos!</p>
+    <output id="pantalla" aria-live="polite">0</output>
+    <button id="instalar">Instalar en mi teléfono</button>
+    <section class="teclado" aria-label="Teclado de calculadora">
+      <button class="borrar" data-action="clear">BORRAR</button><button class="operacion" data-op="/">÷</button>
+      <button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button><button class="operacion" data-op="*">×</button>
+      <button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button><button class="operacion" data-op="-">−</button>
+      <button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button><button class="operacion" data-op="+">+</button>
+      <button class="cero" data-num="0">0</button><button data-num=".">.</button><button class="igual" data-action="equals">=</button>
+    </section>
+  </main>
+  <script>
+    const pantalla = document.querySelector('#pantalla');
+    let primero = 0, operacion = '', nuevo = true;
+    const mostrar = valor => pantalla.textContent = Number.isFinite(valor) ? Number(valor.toFixed(8)).toString() : '¡Ups!';
+    function calcular() {
+      if (!operacion || nuevo) return;
+      const segundo = Number(pantalla.textContent);
+      let resultado;
+      if (operacion === '+') resultado = primero + segundo;
+      if (operacion === '-') resultado = primero - segundo;
+      if (operacion === '*') resultado = primero * segundo;
+      if (operacion === '/') resultado = segundo === 0 ? NaN : primero / segundo;
+      mostrar(resultado); primero = resultado; operacion = ''; nuevo = true;
+    }
+    document.querySelector('.teclado').addEventListener('click', event => {
+      const boton = event.target.closest('button'); if (!boton) return;
+      if (boton.dataset.num !== undefined) {
+        let actual = pantalla.textContent;
+        if (nuevo || actual === '0' || actual === '¡Ups!') { actual = ''; nuevo = false; }
+        if (boton.dataset.num === '.' && actual.includes('.')) return;
+        if (boton.dataset.num === '.' && !actual) actual = '0';
+        pantalla.textContent = actual + boton.dataset.num;
+      } else if (boton.dataset.op) {
+        if (operacion && !nuevo) calcular();
+        primero = Number(pantalla.textContent) || 0; operacion = boton.dataset.op; nuevo = true;
+      } else if (boton.dataset.action === 'equals') calcular();
+      else { pantalla.textContent = '0'; primero = 0; operacion = ''; nuevo = true; }
+    });
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    let instalacion;
+    window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); instalacion = event; document.querySelector('#instalar').style.display = 'block'; });
+    document.querySelector('#instalar').addEventListener('click', async () => { if (instalacion) { await instalacion.prompt(); instalacion = null; } });
+  </script>
+</body>
+</html>
+
